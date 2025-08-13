@@ -59,3 +59,32 @@
 `define D2_2 8'h42
 `define D5_6 8'hC5
 `define D16_2 8'h50
+
+
+`define K28_5_10b_n 10'b0011111010
+`define K28_5_10b_p 10'b1100000101
+
+`define D21_5_10b_n 10'b1010101010
+`define D21_5_10b_p 10'b1010101010
+
+`define D2_2_10b_n 10'b1011010101
+`define D2_2_10b_p 10'b0100100101
+
+`define D5_6_10b_n 10'b1010010110
+`define D5_6_10b_p 10'b1010010110
+
+`define D16_2_10b_n 10'b0110110101
+`define D16_2_10b_p 10'b1001000101
+
+`define D6_5_10b_n 10'b0110011010
+`define D6_5_10b_p 10'b0110011010
+
+`define D26_4_10b_n 10'b0101101101
+`define D26_4_10b_p 10'b0101100010
+
+`define K27_7_10b_n 10'b1101101000
+`define K27_7_10b_p 10'b0010010111
+
+
+
+
