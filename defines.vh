@@ -59,7 +59,7 @@
 `define D2_2 8'h42
 `define D5_6 8'hC5
 `define D16_2 8'h50
-
+`define D0_0 8'h00
 
 `define K28_5_10b_n 10'b0011111010
 `define K28_5_10b_p 10'b1100000101
