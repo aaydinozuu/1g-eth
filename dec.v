@@ -25,7 +25,8 @@ input clk, reset,
 input [9:0] data_10b,
 output control,
 output reg [7:0] data,
-output reg is_invalid
+output reg is_invalid,
+output reg rd
     );
     
     
@@ -63,22 +64,63 @@ output reg is_invalid
                 else if(data_10b[9:4] == (6'b010001) || data_10b[9:4] == (6'b101110))  data[4:0] = 5'd29;
                 else if(data_10b[9:4] == (6'b100001) || data_10b[9:4] == (6'b011110))  data[4:0] = 5'd30;
                 else if(data_10b[9:4] == (6'b010100) || data_10b[9:4] == (6'b101011))  data[4:0] = 5'd31;
-                else is_invalid = 1;
+//                else is_invalid = 1;
   
     end
     
+
+    
     always@(*) begin
                 is_invalid = 0;
-                if(data_10b[3:0] == 4'b1011 || data_10b[3:0] == 4'b0100) data[7:4] = 3'd0;
-                else if(data_10b[3:0] == 4'b1001) data[7:4] = 3'd1;
-                else if(data_10b[3:0] == 4'b0101) data[7:4] = 3'd2;
-                else if(data_10b[3:0] == 4'b0011 || data_10b[3:0] == 4'b1100) data[7:4] = 3'd3;
-                else if(data_10b[3:0] == 4'b1101 || data_10b[3:0] == 4'b0010) data[7:4] = 3'd4;
-                else if(data_10b[3:0] == 4'b1010) data[7:4] = 3'd5;
-                else if(data_10b[3:0] == 4'b0110) data[7:4] = 3'd6;
-                else if(data_10b[3:0] == 4'b1110 || data_10b[3:0] == 4'b0001) data[7:4] = 3'd7;
-                else is_invalid = 1;
+                if(control) begin
+                    if(data_10b[3:0] == 4'b0111 || data_10b[3:0] == 4'b1000) begin
+                        data[7:5] = 3'd7;
+                    end
+                end else begin
+                    if(data_10b[3:0] == 4'b1011 || data_10b[3:0] == 4'b0100) data[7:5] = 3'd0;
+                    else if(data_10b[3:0] == 4'b1001) data[7:5] = 3'd1;
+                    else if(data_10b[3:0] == 4'b0101) data[7:5] = 3'd2;
+                    else if(data_10b[3:0] == 4'b0011 || data_10b[3:0] == 4'b1100) data[7:5] = 3'd3;
+                    else if(data_10b[3:0] == 4'b1101 || data_10b[3:0] == 4'b0010) data[7:5] = 3'd4;
+                    else if(data_10b[3:0] == 4'b1010) data[7:5] = 3'd5;
+                    else if(data_10b[3:0] == 4'b0110) data[7:5] = 3'd6;
+                    else if(data_10b[3:0] == 4'b1110 || data_10b[3:0] == 4'b0001) data[7:5] = 3'd7;
+                    else is_invalid = 1;
+                end
     end
+        
+        reg [3:0] ones6;
+        reg [2:0] ones4;
+        reg rd_after6;
+        reg disp_err6, disp_err4;
+    
+    function [3:0] popcnt6; input [5:0] x; begin popcnt6 = x[0]+x[1]+x[2]+x[3]+x[4]+x[5]; end endfunction
+    function [2:0] popcnt4; input [3:0] x; begin popcnt4 = x[0]+x[1]+x[2]+x[3]; end endfunction
+
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        rd <= 1'b0;
+    end else begin
+
+        ones6 = popcnt6(data_10b[9:4]);
+        ones4 = popcnt4(data_10b[3:0]);
+
+        disp_err6 = ((rd == 1'b1) && (ones6 > 3)) || ((rd == 1'b0) && (ones6 < 3));
+
+        if (ones6 == 3) rd_after6 = rd;
+        else if (ones6 > 3) rd_after6 = 1'b1;
+        else rd_after6 = 1'b0;
+
+        disp_err4 = ((rd_after6 == 1'b1) && (ones4 > 2)) || ((rd_after6 == 1'b0) && (ones4 < 2));
+
+        if (!is_invalid && !(disp_err6 || disp_err4)) begin
+            if (ones4 == 2) rd <= rd_after6;
+            else if (ones4 > 2) rd <= 1'b1;
+            else rd <= 1'b0;
+        end
+    end
+end
+
 
 assign control = (data_10b == 10'b0011110100 ||
                   data_10b == 10'b1100001011 ||
