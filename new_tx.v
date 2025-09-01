@@ -26,7 +26,9 @@ module new_tx(
     input [7:0] TXD,
     input [15:0] tx_Config_Reg,
     output reg control,
-    output reg [7:0] tx_code_group
+    output reg [7:0] tx_code_group,
+    output reg COL,
+    output reg transmitting
     );
     `include "defines.vh"
     wire VOID;
@@ -54,6 +56,19 @@ module new_tx(
     
 ///////////////////////// xmit_set ////////////////////////////
     reg xmit_config_set, xmit_idle_set, xmit_data_set;
+//    reg next_xmit_config_set, next_xmit_idle_set, next_xmit_data_set;
+//    always@(posedge clk) begin
+//        if(reset) begin
+//            xmit_config_set <= 1'b0;
+//            xmit_idle_set   <= 1'b0;
+//            xmit_data_set   <= 1'b0;
+//        end else begin            
+//            xmit_config_set <= next_xmit_config_set;
+//            xmit_idle_set <= next_xmit_idle_set;
+//            xmit_data_set <= next_xmit_data_set;
+//        end
+//    end
+    
     always@(*) begin
         xmit_config_set = 1'b0;
         xmit_idle_set   = 1'b0;
@@ -80,7 +95,7 @@ module new_tx(
     reg [7:0] next_tx_code_group;
     reg next_control;
     reg [4:0] state, next_state;
-    reg transmitting, COL, next_transmitting, next_COL;   
+    reg next_transmitting, next_COL;   
     reg [3:0] config_cnt, next_config_cnt;
     reg idle_cnt, next_idle_cnt;
     reg tx_even, next_tx_even, PUDR, next_PUDR;
@@ -145,12 +160,10 @@ module new_tx(
                 if(xmit_config_set) begin
                     next_state = CONFIGURATION;
                     next_first_config_flag = 1;
-                end 
-                if(xmit_idle_set || (xmit_data_set && (TX_EN || TX_ER))) begin
+                end else if(xmit_idle_set || (xmit_data_set && (TX_EN || TX_ER))) begin
                     next_first_idle_flag = 1;
                     next_state = IDLE;
-                end 
-                if(!TX_EN && !TX_ER && xmit_data_set) begin
+                end else if(!TX_EN && !TX_ER && xmit_data_set) begin
                     next_state = XMIT_DATA;
                 end else begin
                     next_state = TX_TEST_XMIT;
