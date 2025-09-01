@@ -25,8 +25,9 @@ input TX_EN, TX_ER, clk, reset,
 input [15:0] tx_Config_Reg,
 input [7:0] TXD,
 input [1:0] xmit,
-output PUDR,
-output [9:0] enc10b_exit
+output COL,
+output [9:0] enc10b_exit,
+output transmitting
     );
     
     wire [2:0] tx_o_set;
@@ -35,7 +36,8 @@ output [9:0] enc10b_exit
     
     new_tx tx (
     .TX_EN(TX_EN), .TX_ER(TX_ER), .reset(reset), .clk(clk), .tx_disparity(rd), .control(control),
-    .xmit(xmit), .tx_code_group(tx_code_group), .tx_Config_Reg(tx_Config_Reg), .TXD(TXD)
+    .xmit(xmit), .tx_code_group(tx_code_group), .tx_Config_Reg(tx_Config_Reg), .TXD(TXD),
+    .COL(COL), .transmitting(transmitting)
     );
     
     
