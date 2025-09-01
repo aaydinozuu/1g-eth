@@ -4,7 +4,10 @@ module enc (
     output reg [9:0] encoded_data,
     output rd
 );
-
+  `ifdef COUNT_ONES10_DEFINED
+  `undef COUNT_ONES10_DEFINED
+  `endif
+  `include "defines.vh"
 reg rd_reg, rd_next;
 
 function selection_4b;
