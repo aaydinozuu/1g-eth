@@ -5,7 +5,7 @@ module sync(
 input clk,
 input signal_detect,
 input [9:0] PUDI,
-input rd,
+//input rd,
 input reset,
 output [7:0] data_8b,
 output reg carrier_detect,
@@ -40,12 +40,14 @@ output reg rx_even
     
     ////////////////////////////////////////INVALID PUDI //////////////////////////////////////////
     wire is_invalid;
+    wire rd;
     
     dec deco(
     .clk(clk),
     .reset(reset),
     .data_10b(PUDI),
     .is_invalid(is_invalid),
+    .rd(rd),
     .control(control),
     .data(data_8b)
     );
