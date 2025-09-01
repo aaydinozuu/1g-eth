@@ -454,7 +454,11 @@ always@(*) begin
                 next_RX_DV = 0;
                 next_RX_ER = 0;
             end
-            next_state = WAIT_FOR_K;
+            if(!sync_status) begin
+                next_state = LINK_FAILED;
+            end else begin
+                next_state = WAIT_FOR_K;
+            end
         end
         
     endcase
