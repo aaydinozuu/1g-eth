@@ -16,7 +16,7 @@ output reg rx_even
   `ifdef COUNT_ONES10_DEFINED
   `undef COUNT_ONES10_DEFINED
   `endif
-    `include "defines.vh"
+  `include "defines.vh"
     
     localparam [3:0]
         LOSS_OF_SYNC        = 4'd0,

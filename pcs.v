@@ -44,6 +44,7 @@ module pcs(
     output toggle_rx,
     output np_rx,
     output resolve_priority
+//    output comma_detected
     );
     
     wire [1:0] RUDI;
@@ -61,6 +62,7 @@ module pcs(
         .TX_ER(TX_ER),
         .tx_Config_Reg(tx_Config_Reg),
         .TXD(TXD),
+//        .comma_detected(comma_detected),
         .xmit(xmit),
         .COL(COL),
         .enc10b_exit(tx_code_group),

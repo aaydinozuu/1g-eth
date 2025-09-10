@@ -26,6 +26,7 @@ input [15:0] tx_Config_Reg,
 input [7:0] TXD,
 input [1:0] xmit,
 output COL,
+//output comma_detected,
 output [9:0] enc10b_exit,
 output transmitting
     );

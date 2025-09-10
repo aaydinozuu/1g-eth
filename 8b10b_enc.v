@@ -3,6 +3,7 @@ module enc (
     input [7:0] data,
     output reg [9:0] encoded_data,
     output rd
+//    output comma_detected
 );
   `ifdef COUNT_ONES10_DEFINED
   `undef COUNT_ONES10_DEFINED
@@ -87,10 +88,7 @@ function [3:0] data_4b;
     end
 endfunction
 
-
-
-
-
+//assign comma_detected = ((encoded_data == `K28_5_10b_n) || (encoded_data == `K28_5_10b_p));
 
 reg [9:0] sym_next;
 

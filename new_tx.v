@@ -235,7 +235,7 @@ module new_tx(
                     next_PUDR = 1;
                     next_idle_cnt = idle_cnt + 1;
                 end else if(idle_cnt == 1) begin
-                    next_tx_code_group = first_idle_flag ? `D5_6 : `D16_2;
+                    next_tx_code_group = tx_disparity ? `D5_6 : `D16_2;
                     next_tx_even = 0;
                     next_control = 0;
                     next_PUDR = 1;
