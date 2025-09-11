@@ -28,7 +28,6 @@ module rx_unpack_20b_to_10b #(
   reg phase;
   wire [19:0] rwenb_sl;
   assign rwenb_sl = {rwenb[18:0], rwenb[19]};  
-//  assign rwenb_sl = (tx20 == rwenb) ? rwenb : {rwenb[18:0], rwenb[19]};
 
   // Simple edge detector for align_event (optional; you can feed a clean pulse directly)
   reg align_event_d;

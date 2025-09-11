@@ -21,7 +21,8 @@
 
 
 module pcs(
-    input clk,
+    input clk_tx,
+    input clk_rx,
     input reset,
     input [16:1] mr_adv_ability,
     input mr_an_enable,
@@ -56,7 +57,7 @@ module pcs(
 //    wire rd;
     
     new_top tx (
-        .clk(clk),
+        .clk(clk_tx),
         .reset(reset),
         .TX_EN(TX_EN),
         .TX_ER(TX_ER),
@@ -70,7 +71,7 @@ module pcs(
     );
     
     rx_top rx (
-        .clk(clk),
+        .clk(clk_rx),
         .reset(reset),
         .signal_detect(signal_detect),
         .PUDI(rx_code_group),
@@ -85,7 +86,7 @@ module pcs(
     );
     
     an auto_neg(
-        .clk(clk),
+        .clk(clk_rx),
         .RUDI(RUDI),
         .reset(reset),
         .mr_adv_ability(mr_adv_ability),
@@ -103,7 +104,7 @@ module pcs(
     );
     
     cs car_sen(
-        .clk(clk),
+        .clk(clk_rx),
         .reset(reset),
         .repeater_mode(repeater_mode),
         .transmitting(transmitting),

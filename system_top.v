@@ -34,7 +34,7 @@ module system_top (
     .O   (gtrefclk0_int),
     .ODIV2()
   );
-wire rxslide_in;
+  wire rxslide_in;
   // ===== Freerun clock for reset/DRP =====
   wire clk_freerun_buf;
   BUFG u_bufg0 (.I(clk_freerun), .O(clk_freerun_buf));
@@ -45,11 +45,17 @@ wire rxslide_in;
 
   // ===== GT Wizard wrapper (only always-present ports) =====
   wire        txusrclk2, rxusrclk2;
-  wire [19:0] tx20, rx20;
+  (* mark_debug = "true" *) wire [19:0] tx20, rx20;
   wire        gtpowergood, txpmaresetdone, rxpmaresetdone;
   
 //  (*mark_debug = "true"*) wire comma_detected;
-
+  wire [2:0] loopback_in;
+  assign loopback_in = 3'b010;
+  
+  wire rxslide;
+//  wire rxbyteisaligned_out;
+//  wire rxcommadeten_in;
+     
   giga_eth gtwiz_inst (
     .gtrefclk0_in                 (gtrefclk0_int),
     .drpclk_in                    (drpclk_buf),
@@ -61,17 +67,23 @@ wire rxslide_in;
 
     .gtwiz_userdata_tx_in         (tx20),
     .gtwiz_userdata_rx_out        (rx20),
-
+    
     .gtpowergood_out              (gtpowergood),
     .txpmaresetdone_out           (txpmaresetdone),
     .rxpmaresetdone_out           (rxpmaresetdone),
     
-//    .rxslide_in                   (rxslide_in),
+//    .rxcommadeten_in              (rxcommadeten_in),
+//    .rxbyteisaligned_out          (rxbyteisaligned_out),
+    .rxslide_in                   (rxslide),
     .gtytxn_out                   (gtytxn_out),
     .gtytxp_out                   (gtytxp_out),
     .gtyrxn_in                    (gtyrxn_in),
-    .gtyrxp_in                    (gtyrxp_in)
+    .gtyrxp_in                    (gtyrxp_in),
+    
+    .loopback_in                  (loopback_in)
   );
+
+
 
   // ===== 10b <-> 20b gearbox =====
   wire [9:0] tx_code_group;
@@ -83,25 +95,22 @@ wire rxslide_in;
     .twenb      (tx20),
     .twenb_valid()
   );
-
+  
+ 
   wire [9:0] rx_code_group;
-  rx_unpack_20b_to_10b u_rxunpack (
+  rxslide slide (
     .clk               (rxusrclk2),
     .rst               (~rxpmaresetdone),
-//    .comma_detected    (comma_detected),
     .rwenb             (rx20),
-    .rwenb_valid       (1'b1),
-    .align_event       (1'b0),      // no explicit align event exposed
-//    .tx20(tx20),
-    .prefer_upper_first(1'b1),
     .renb              (rx_code_group),
-    .renb_valid        ()
+    .rxslide           (rxslide)
   );
 
   // ===== PCS block =====
   wire signal_detect = 1'b1;  // for sim; in real hw drive from PMD
   pcs u_pcs (
-    .clk           (txusrclk2), // NOTE: if you want true split domains, refactor PCS
+    .clk_rx        (rxusrclk2), // NOTE: if you want true split domains, refactor PCS
+    .clk_tx        (txusrclk2), // NOTE: if you want true split domains, refactor PCS
     .reset         (~(txpmaresetdone & rxpmaresetdone)),
     .mr_adv_ability(mr_adv_ability),
     .mr_an_enable  (mr_an_enable),
